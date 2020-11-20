@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>历史记录</title>
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/semantic-ui/2.4.1/semantic.css">
+    <link rel="stylesheet" href="/static/css/main.css">
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.js"></script>
+    <script type="text/javascript" src="https://cdn.bootcdn.net/ajax/libs/semantic-ui/2.4.1/semantic.js"></script>
+    <script type="text/javascript" src="/static/js/main.js"></script>
+</head>
+
+<body>
+    <div class="ui segment">
+        <div class="ui text menu">
+            <div class="item">
+                <h2><a href="/" style="color: black;"><i class="edit icon"></i>四则运算练习</a></h2>
+            </div>
+            <div class="menu right">
+                <div class="item">
+                    {% if request.user.is_authenticated %}
+                    <div class="ui inline dropdown">
+                        <div class="text">
+                            <h3>{{ request.user.username }}</h3>
+                        </div>
+                        <i class="dropdown icon"></i>
+                        <div class="menu">
+                            <a href="/history/{{ request.user.uid }}" class="item"><i class="history icon"></i>记录</a>
+                            <a href="/logout/" class="item"><i class="power off icon"></i>退出</a>
+                        </div>
+                    </div>
+                    {% else %}
+                        <button type="button" class="ui button login"><i class="paper plane icon"></i>登录</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <br/>
+    <div class="ui basic segment content">
+        <h2 class="ui center aligned header">
+            <i class="history icon"></i>提交记录 | 
+            {% if request.user.is_authenticated %}
+            正确率：{{ request.user.ac_rate }}%
+            {% endif %}
+        </h2>
+        <div class="ui centered grid container">
+            <div class="ui divider fourteen wide column"></div>
+            <div class="fourteen wide column">
+                <form action="/" method="GET">
+                    {% csrf_token %}
+                    {% for time, questions_list in questions_dir.items %}
+                    
+                    <table class="ui selectable celled table">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <!-- <th>ID</th> -->
+                                <th>Problem</th>
+                                <th>Your Answer</th>
+                                <th>Status</th>
+                                <th>Correct Answer</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tab">
+                            {% for q in questions_list %}
+                            <tr>
+                                <td class="two wide column">{{ q.updated_at }}</td>
+                                <!-- <td class="one wide column">{{ q.qid }}</td> -->
+                                <td class="five wide column">{{ q.content }}</td>
+                                <td class="two wide column">{{ q.usrAns }}</td>
+                                <td class="one wide column">{{ q.status }}</td>
+                                <td class="three wide column">{{ q.correctAns }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% endfor %}
+                </form>
+            </div>
+            <div class="ui divider fourteen wide column"></div>
+        </div>
+    </div>
+    <!-- 登录框 -->
+    <div class="ui mini modal login">
+        <div class="header">
+            <h2>Welcome!</h2>
+        </div>
+        <div class="content">
+            <form action="/login/" class="ui form" method="POST" autocomplete="off">
+                {% csrf_token %}
+                <!--循环表单内容-->
+                {% for account in form %}
+                <div class="field">
+                    {{ account.label }} {{ account }}
+                </div>
+                {% endfor %}
+                <div class="actions">
+                    <button class="ui black deny left button">取消</button>
+                    <button type="submit" class="ui submit green right button btn_submit">登录</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="footer">
+        <div>
+            <i class="copyright outline icon"></i>&nbsp;2020&nbsp;
+            <a href="https://yuhi.xyz/" target="_blank">Yuhi</a>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>四则运算练习</title>
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/semantic-ui/2.4.1/semantic.css">
+    <link rel="stylesheet" href="/static/css/main.css">
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.js"></script>
+    <script type="text/javascript" src="https://cdn.bootcdn.net/ajax/libs/semantic-ui/2.4.1/semantic.js"></script>
+    <!-- <script type="text/javascript" src="https://cdn.bootcdn.net/ajax/libs/semantic-ui/2.4.1/components/dropdown.js"></script> -->
+    <script type="text/javascript" src="/static/js/main.js"></script>
+</head>
+
+<body>
+    <div class="ui segment">
+        <div class="ui text menu">
+            <div class="item">
+                <h2><a href="/" style="color: black;"><i class="edit icon"></i>四则运算练习</a></h2>
+            </div>
+            <div class="menu right">
+                <div class="item">
+                    {% if request.user.is_authenticated %}
+                        <div class="ui inline dropdown">
+                            <div class="text">
+                                <h3>{{ request.user.username }}</h3>
+                            </div>
+                            <i class="dropdown icon"></i>
+                            <div class="menu">
+                                <a href="/history/{{ request.user.uid }}" class="item"><i class="history icon"></i>记录</a>
+                                <a href="/logout/" class="item"><i class="power off icon"></i>退出</a>
+                            </div>
+                        </div>
+                    {% else %}
+                        <button type="button" class="ui button login"><i class="paper plane icon"></i>登录</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <br/>
+    <div class="ui basic segment content">
+        <h2 class="ui center aligned header">🎉开始你的挑战🎉</h2>
+        <div class="ui centered grid container">
+            <div class="ui divider fourteen wide column"></div>
+            <div class="fourteen wide column">
+                <form action="/" method="POST">
+                    {% csrf_token %}
+                    <div class="ui selection dropdown">
+                        <!--题型下拉框-->
+                        <input name="problem_type" type="hidden">
+                        <div class="default text">题型</div>
+                        <i class="dropdown icon"></i>
+                        <div class="menu">
+                            <div class="item" data-value="0">题型：填空</div>
+                            <div class="item" data-value="1">题型：判断</div>
+                            <!-- <div class="item" data-value="2">题型：选择</div> -->
+                        </div>
+                    </div>
+                    <div class="ui selection dropdown">
+                        <!--运算数范围下拉框-->
+                        <input name="num_range" type="hidden">
+                        <div class="default text">运算数范围</div>
+                        <i class="dropdown icon"></i>
+                        <div class="menu">
+                            <div class="item" data-value="0">数据范围：10 以内</div>
+                            <div class="item" data-value="1">数据范围：100 以内</div>
+                            <div class="item" data-value="2">数据范围：1000 以内</div>
+                        </div>
+                    </div>
+                    <div class="ui selection dropdown">
+                        <!--运算数个数下拉框-->
+                        <input name="num_cnt" type="hidden">
+                        <div class="default text">运算数个数</div>
+                        <i class="dropdown icon"></i>
+                        <div class="menu">
+                            <div class="item" data-value="0">运算数个数：2</div>
+                            <div class="item" data-value="1">运算数个数：3</div>
+                            <div class="item" data-value="2">运算数个数：4</div>
+                            <div class="item" data-value="3">运算数个数：5</div>
+                        </div>
+                    </div>
+                    <div class="ui multiple selection search dropdown">
+                        <!--括号小数多选下拉框-->
+                        <input name="bracket_decimal" type="hidden" value="" autocomplete="off" />
+                        <i class="dropdown icon"></i>
+                        <div class="default text">进阶（括号/小数/不选）</div>
+                        <div class="menu">
+                            <div class="item" data-value="0">括号</div>
+                            <div class="item" data-value="1">小数</div>
+                        </div>
+                    </div>&nbsp;
+                    <button class="ui button btn_clear">清空</button>
+                    <input type="submit" class="ui button confirm" value="确认" />
+                </form>
+                <br/>
+                <form action="/" method="GET">
+                    {% csrf_token %}
+                    <table class="ui selectable celled table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Problem</th>
+                                <th>Your Answer</th>
+                                <th>Status</th>
+                                <th>Correct Answer</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tab">
+                            {% for id, q in questions.items %}
+                            <tr>
+                                <td class="one wide column">{{ id }}</td>
+                                <td class="five wide column">{{ q.content }}</td>
+                                <td class="three wide column">
+                                    <div class="ui form">
+                                        <div class="field" id="ans_col">
+                                            <input type="text" name="ans" value="" autocomplete="off" />
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="two wide column">{{ q.status }}</td>
+                                <td class="three wide column">{{ q.correctAns }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <input type="submit" class="ui button submit" id="btn_submit" value="提交" />
+                </form>
+            </div>
+            <div class="ui divider fourteen wide column"></div>
+        </div>
+    </div>
+    <div class="ui card notice">
+        <div class="content">
+            <div class="header">😀 提示</div>
+        </div>
+        <div class="content">
+            <div class="ui small feed">
+                <div class="event">
+                    <div class="content" style="font-size: 16px;">
+                        一、填空题：结果请以整数或小数呈现，若答案中出现小数且小数点后超过2位，请四舍五入至小数点后2位。
+                        <br/>二、判断题：用T表示正确，F表示错误。等式右边如果出现超过2位的小数，自动四舍五入至小数点后2位，再进行比较。
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 登录框 -->
+    <div class="ui mini modal login">
+        <div class="header">
+            <h2>Welcome!</h2>
+        </div>
+        <div class="content">
+            <form action="/login/" class="ui form" method="POST" autocomplete="off">
+                {% csrf_token %}
+                <!--循环表单内容-->
+                {% for account in form %}
+                <div class="field">
+                    {{ account.label }} {{ account }}
+                </div>
+                {% endfor %}
+                <div class="actions">
+                    <button class="ui black deny left button">取消</button>
+                    <button type="submit" class="ui submit green right button btn_submit">登录</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="footer">
+        <div>
+            <i class="copyright outline icon"></i>&nbsp;2020&nbsp;
+            <a href="https://yuhi.xyz/" target="_blank">Yuhi</a>
+        </div>
+    </div>
+</body>
+
+</html>

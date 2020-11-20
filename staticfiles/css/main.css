@@ -1,0 +1,21 @@
+.ui.multiple.selection.search.dropdown {
+    width: 23%;
+}
+
+.ui.button.submit {
+    float: right;
+}
+
+.ui.selection.dropdown {
+    margin-bottom: 5px;
+}
+
+.footer {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.ui.card.notice {
+    width: 45%;
+    margin: 30px auto !important;
+}
