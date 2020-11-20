@@ -82,4 +82,4 @@
     pbkdf2_sha256$216000$lfz8J1V7JI4j$lvnqFihDDzuiEVAVQN4FD3EGMqm5juaczN1B4lLDgVw=
     ```
 
-    上面的结果就是管理员需要在后台预置的密码，用户登陆时，使用 "tqlqwqtql" 登录即可。
+    上面的结果就是管理员需要在后台预置的密码，用户登陆时，使用密码"tqlqwqtql" 登录即可。
